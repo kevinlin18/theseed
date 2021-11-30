@@ -3,6 +3,10 @@ import App from './App.vue'
 import router from './router'
 import vuetify from './plugins/vuetify';
 
+// axios
+import axios from 'axios'
+Vue.prototype.$ajax= axios.post
+
 Vue.config.productionTip = false
 
 new Vue({

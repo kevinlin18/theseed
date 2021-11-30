@@ -14,19 +14,19 @@
               <span class="title">姓名：</span>
             </v-flex>
             <v-flex xs12 sm8 md4>
-              <v-text-field v-model="s.name"></v-text-field>
+              <v-text-field v-model="query.name"></v-text-field>
             </v-flex>
             <v-flex xs12 sm4 md2 py-4>
-              <span class="title">電子信箱：</span>
+              <span class="title">電話：</span>
             </v-flex>
             <v-flex xs12 sm8 md4>
-              <v-text-field v-model="s.email"></v-text-field>
+              <v-text-field v-model="query.phone"></v-text-field>
             </v-flex>
             <v-flex xs12 sm4 md2 py-4>
               <span class="title">地址：</span>
             </v-flex>
             <v-flex xs12 sm8 md4>
-              <v-text-field v-model="s.address"></v-text-field>
+              <v-text-field v-model="query.address"></v-text-field>
             </v-flex>
             <v-flex xs12>
               <h2>產品資料</h2>
@@ -35,15 +35,15 @@
               <span class="title">類型：</span>
             </v-flex>
             <v-flex xs12 sm8 md4>
-              <v-select :items="dropdown.type" v-model="s.type"></v-select>
+              <v-select :items="dropdown.type" v-model="query.type"></v-select>
             </v-flex>
             <v-flex xs12 sm4 md2 py-4>
               <span class="title">發票號碼：</span>
             </v-flex>
             <v-flex xs12 sm8 md4>
-              <v-text-field v-model="s.receipt"></v-text-field>
+              <v-text-field v-model="query.receipt"></v-text-field>
             </v-flex>
-            <v-flex xs12 sm4 md2 py-4>
+            <!-- <v-flex xs12 sm4 md2 py-4>
               <span class="title">購買日期：</span>
             </v-flex>
             <v-flex xs12 sm8 md4>
@@ -57,19 +57,19 @@
               >
                 <template v-slot:activator="{ on }">
                   <v-text-field
-                    v-model="s.date"
+                    v-model="query.date"
                     prepend-icon="mdi-calendar"
                     readonly
                     v-on="on"
                   ></v-text-field>
                 </template>
-                <v-date-picker v-model="s.date" no-title scrollable>
+                <v-date-picker v-model="query.date" no-title scrollable>
                   <v-spacer></v-spacer>
                   <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-                  <v-btn text color="primary" @click="$refs.menu.save(s.date)">OK</v-btn>
+                  <v-btn text color="primary" @click="$refs.menu.save(query.date)">OK</v-btn>
                 </v-date-picker>
               </v-menu>
-            </v-flex>
+            </v-flex> -->
             <v-flex xs12>
               <h2>購買證明</h2>
             </v-flex>
@@ -77,14 +77,14 @@
               <span class="title">發票：</span>
             </v-flex>
             <v-flex xs12 sm8 md4>
-              <v-file-input v-model="s.fileReceipt"></v-file-input>
+              <v-file-input v-model="query.fileReceipt"></v-file-input>
             </v-flex>
-            <v-flex xs12 sm4 md2 py-4>
+            <!-- <v-flex xs12 sm4 md2 py-4>
               <span class="title">保固卡：</span>
             </v-flex>
             <v-flex xs12 sm8 md4>
-              <v-file-input v-model="s.fileGuarantee"></v-file-input>
-            </v-flex>
+              <v-file-input v-model="query.fileGuarantee"></v-file-input>
+            </v-flex> -->
             <v-flex xs12>
               <ol>
                 <li v-for="(guide, index) in guides" :key="index">
@@ -98,7 +98,7 @@
                 v-model="checkbox"
                 label="我已詳閱並同意活動規則"
               ></v-checkbox>
-              <v-btn @click="get()" color="primary" :disabled="!checkbox">確認送出</v-btn>
+              <v-btn @click="create()" color="primary" :disabled="!checkbox">確認送出</v-btn>
             </v-flex>
           </v-layout>
         <!-- </v-card-text> -->
@@ -128,29 +128,48 @@ export default {
       dropdown:{
         type:[
           {value:'', text:'請選擇……'},
-          {value:'0', text:'液晶電視機'},
-          {value:'1', text:'電漿電視機'},
-          {value:'2', text:'平面電視機'},
-          {value:'3', text:'映像管電視機'},
+          {value:'液晶電視機', text:'液晶電視機'},
+          {value:'電漿電視機', text:'電漿電視機'},
+          {value:'平面電視機', text:'平面電視機'},
+          {value:'映像管電視機', text:'映像管電視機'},
         ]
       },
       checkbox: false,
       menu: false,
-      s:{
-        name:'',
-        email:'',
-        address:'',
-        type:'',
-        receipt:'',
-        date:'',
+      query:{
+        name:'Jack',
+        phone:'0921123123',
+        address:'Tainan',
+        type:'平面電視機',
+        receipt:'ZZ12341234',
         fileReceipt: null,
-        fileGuarantee: null
+      //   name:'',
+      //   phone:'',
+      //   address:'',
+      //   type:'',
+      //   receipt:'',
+      //   fileReceipt: null,
+        // date:'',
+        // fileGuarantee: null
       }
     }
   },
   methods:{
-    get(){
-
+    create(){
+      let formData = new FormData()
+      formData.append('name', this.query.name)
+      formData.append('phone', this.query.phone)
+      formData.append('address', this.query.address)
+      formData.append('type', this.query.type)
+      formData.append('receipt', this.query.receipt)
+      formData.append('fileReceipt', this.query.fileReceipt)
+      this.$ajax('exchange/create', formData).then(res =>{
+      if (res.data.success) {
+        this.$router.push('search')
+      } else {
+        window.alert('Error: ' + res.data.message)
+      }
+      })
     }
   }
 }

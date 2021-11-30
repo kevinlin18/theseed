@@ -17,7 +17,7 @@
             <span class="title">電話號碼：</span>
           </v-flex>
           <v-flex xs8>
-            <v-text-field></v-text-field>
+            <v-text-field v-model="query.phone" @keydown.enter="get()"></v-text-field>
           </v-flex>
           <v-flex xs8 offset-xs4>
             <v-btn @click="get()" color="primary">查詢</v-btn>
@@ -42,16 +42,22 @@ export default {
   data(){
     return {
       headers:[
-        { text: '產品活動',value:'' },
-        { text: '產品序號',value:'' },
-        { text: '申請結果',value:'' }
+        { text: '產品類型',value:'type' },
+        { text: '發票號碼',value:'receipt' },
+        { text: '申請結果',value:'result' }
       ],
-      items:[]
+      items:[],
+      query:{
+        phone: ''
+      }
     }
   },
   methods:{
     get(){
-
+      this.items = []
+      this.$ajax('search/get', this.query).then(res =>{
+        this.items = res.data
+      })
     }
   }
 }
